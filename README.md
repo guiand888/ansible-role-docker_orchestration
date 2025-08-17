@@ -17,6 +17,9 @@ docker_project_root: "/home/{{ ansible_user }}/docker"
 docker_build_default: true
 docker_restart_default: false
 
+# Project exclusion list - projects to skip
+docker_projects_exclude: []
+
 # Project configurations
 docker_projects:
   - name: project_name
@@ -45,6 +48,19 @@ docker_projects:
 ## Example Usage
 
 See `playbooks/docker-maintenance-compose.ansible.yml` for ready-to-use playbook.
+
+### Excluding Projects
+
+To exclude specific projects from orchestration, define `docker_projects_exclude` in host_vars:
+
+```yaml
+# host_vars/server1.yml
+docker_projects_exclude:
+  - nextcloud
+  - maintenance-project
+```
+
+Excluded projects will be skipped during all operations (pull, build, start, restart).
 
 ## Author
 

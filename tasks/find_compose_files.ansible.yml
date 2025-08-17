@@ -5,6 +5,16 @@
       - docker_projects is defined
       - docker_projects | length > 0
     fail_msg: "No Docker projects defined"
+
+- name: Filter excluded projects
+  ansible.builtin.set_fact:
+    docker_projects_filtered: "{{ docker_projects | rejectattr('name', 'in', docker_projects_exclude) | list }}"
+
+- name: Debug excluded projects
+  ansible.builtin.debug:
+    msg: "Excluding projects: {{ docker_projects_exclude | join(', ') }}"
+  when: docker_projects_exclude | length > 0
+
 - name: Find Docker Compose Files
   ansible.builtin.find:
     paths: "{{ docker_project_root }}/{{ item.name }}"
@@ -18,6 +28,6 @@
       - 'compose.yml'
       - 'compose.yaml'
   register: compose_files
-  loop: "{{ docker_projects }}"
+  loop: "{{ docker_projects_filtered }}"
   loop_control:
     label: "{{ item.name }}"
