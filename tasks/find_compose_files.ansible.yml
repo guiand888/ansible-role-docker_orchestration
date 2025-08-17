@@ -1,10 +1,43 @@
 ---
+- name: Auto-discover Docker projects from directories
+  when: docker_projects_mode == 'auto'
+  block:
+    - name: Find project directories
+      ansible.builtin.find:
+        paths: "{{ docker_project_root }}"
+        file_type: directory
+        depth: 1
+      register: project_directories
+
+    - name: Create docker_projects list from discovered directories
+      ansible.builtin.set_fact:
+        docker_projects: >
+          {%- set discovered_projects = [] -%}
+          {%- for dir in project_directories.files -%}
+            {%- set project_name = dir.path | basename -%}
+            {%- set _ = discovered_projects.append({
+              'name': project_name,
+              'state': 'started',
+              'pull': docker_build_default | default(true),
+              'build': false,
+              'start': true,
+              'restart': docker_restart_default | default(false),
+              'recreate': false
+            }) -%}
+          {%- endfor -%}
+          {{ discovered_projects }}
+
+    - name: Debug discovered projects
+      ansible.builtin.debug:
+        msg: "Auto-discovered projects: {{ docker_projects | map(attribute='name') | join(', ') }}"
+      when: docker_projects | length > 0
+
 - name: Validate Docker project configuration
   ansible.builtin.assert:
     that:
       - docker_projects is defined
       - docker_projects | length > 0
-    fail_msg: "No Docker projects defined"
+    fail_msg: "No Docker projects {{ 'discovered' if docker_projects_mode == 'auto' else 'defined' }}"
 
 - name: Filter excluded projects
   ansible.builtin.set_fact:

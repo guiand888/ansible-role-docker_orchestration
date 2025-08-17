@@ -17,10 +17,13 @@ docker_project_root: "/home/{{ ansible_user }}/docker"
 docker_build_default: true
 docker_restart_default: false
 
+# Project discovery mode: 'auto' or 'manual' (default: auto)
+docker_projects_mode: auto
+
 # Project exclusion list - projects to skip
 docker_projects_exclude: []
 
-# Project configurations
+# Project configurations (manual mode only)
 docker_projects:
   - name: project_name
     state: started        # started|stopped|restarted
@@ -43,6 +46,40 @@ docker_projects:
         state: started
         pull: true
         recreate: true
+```
+
+## Project Discovery Modes
+
+### Auto Mode (Default)
+
+Automatically discovers Docker projects by scanning subdirectories in `docker_project_root`:
+
+```bash
+/home/user/docker/
+├── nextcloud/          # Auto-discovered as 'nextcloud'
+├── wordpress/          # Auto-discovered as 'wordpress'
+└── monitoring/         # Auto-discovered as 'monitoring'
+```
+
+Each discovered project gets default settings:
+- `state: started`
+- `pull: true` (based on `docker_build_default`)
+- `build: false`
+- `start: true`
+- `restart: false` (based on `docker_restart_default`)
+- `recreate: false`
+
+### Manual Mode
+
+Explicitly define projects in variables:
+
+```yaml
+docker_projects_mode: manual
+docker_projects:
+  - name: webapp
+    state: started
+    pull: true
+    recreate: true
 ```
 
 ## Example Usage

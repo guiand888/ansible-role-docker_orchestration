@@ -18,6 +18,11 @@ docker_orchestration_enable: true
 # Default Docker Compose command timeout (seconds)
 docker_compose_timeout: 300
 
+# Project discovery mode: 'auto' or 'manual'
+# auto: Automatically discover projects from subdirectories in docker_project_root
+# manual: Use explicitly defined docker_projects list
+docker_projects_mode: auto
+
 # List of project names to exclude from orchestration
 # Can be defined in host_vars or group_vars
 docker_projects_exclude: []
