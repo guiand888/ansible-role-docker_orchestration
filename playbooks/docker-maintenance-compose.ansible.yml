@@ -1,0 +1,11 @@
+- name: Update and restart docker projects
+  hosts: all
+  become: true
+  become_method: ansible.builtin.sudo
+  gather_facts: true
+  ignore_errors: "{{ ansible_check_mode }}"
+  # when: docker_maintenance | default(false)  # Uncomment to limit to hosts with docker_maintenance: true
+  tasks:
+    - name: Run Docker Maintenance Role
+      ansible.builtin.include_role:
+        name: guiand888.docker_orchestration

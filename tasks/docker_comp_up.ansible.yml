@@ -1,0 +1,18 @@
+---
+- name: Start Docker Compose Projects
+  block:
+
+    - name: Start Docker Compose Project Services
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_project_root }}/{{ item.item.name }}"
+        files:
+          - "{{ item.files | map(attribute='path') | map('basename') | list | first | default(omit) }}"
+        state: present
+        recreate: always
+        build: always
+      loop: "{{ compose_files.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      when:
+        - item.start | default(true) | bool
+      changed_when: false

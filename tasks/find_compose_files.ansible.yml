@@ -1,0 +1,23 @@
+---
+- name: Validate Docker project configuration
+  ansible.builtin.assert:
+    that:
+      - docker_projects is defined
+      - docker_projects | length > 0
+    fail_msg: "No Docker projects defined"
+- name: Find Docker Compose Files
+  ansible.builtin.find:
+    paths: "{{ docker_project_root }}/{{ item.name }}"
+    patterns:
+      - 'compose.{{ item.name }}.yml'
+      - 'compose.{{ item.name }}.yaml'
+      - '{{ item.name }}.compose.yml'
+      - '{{ item.name }}.compose.yaml'
+      - 'docker-compose.yml'
+      - 'docker-compose.yaml'
+      - 'compose.yml'
+      - 'compose.yaml'
+  register: compose_files
+  loop: "{{ docker_projects }}"
+  loop_control:
+    label: "{{ item.name }}"

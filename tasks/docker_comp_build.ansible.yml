@@ -1,0 +1,16 @@
+---
+- name: Build Docker Compose Projects
+  block:
+    - name: Build Docker Compose Project Images
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_project_root }}/{{ item.item.name }}"
+        files:
+          - "{{ item.files | map(attribute='path') | map('basename') | list | first | default(omit) }}"
+        state: present
+        build: always
+      loop: "{{ compose_files.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      when:
+        - item.build | default(false) | bool
+      changed_when: false

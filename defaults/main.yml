@@ -1,0 +1,30 @@
+---
+# defaults file for guiand888.docker_orchestration
+
+# Root directory containing Docker Compose projects
+docker_project_root: "/home/{{ ansible_user }}/docker"
+
+# Default behavior for building Docker images
+# Set to false to skip builds by default
+docker_build_default: true
+
+# Default behavior for restarting services
+# Set to true to restart all services by default
+docker_restart_default: false
+
+# Role enable flag - set to false to skip all tasks
+docker_orchestration_enable: true
+
+# Default Docker Compose command timeout (seconds)
+docker_compose_timeout: 300
+
+# Example docker_projects configuration:
+# docker_projects:
+#   - name: webapp
+#     state: started        # started|stopped|restarted
+#     pull: true           # Pull latest images
+#     build: false         # Build images from Dockerfile
+#     start: true          # Start services
+#     restart: false       # Restart running services
+#     recreate: false      # Force recreate containers
+docker_projects: []

@@ -1,0 +1,16 @@
+---
+- name: Restart Docker Compose Projects
+  block:
+    - name: Restart Docker Compose Project Services
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_project_root }}/{{ item.item.name }}"
+        files:
+          - "{{ item.files | map(attribute='path') | map('basename') | list | first | default(omit) }}"
+        state: restarted
+        recreate: never
+      loop: "{{ compose_files.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      when:
+        - item.state == 'restarted'
+      changed_when: false

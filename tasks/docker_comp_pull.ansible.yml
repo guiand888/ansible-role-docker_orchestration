@@ -1,0 +1,31 @@
+---
+- name: Pull Docker Compose Project Images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ docker_project_root }}/{{ item.item.name }}"
+    files:
+      - "{{ item.files | map(attribute='path') | map('basename') | list | first | default(omit) }}"
+  loop: "{{ compose_files.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when:
+    - item.pull | default(true) | bool or item.pull == 'always'
+  register: pull_results
+
+- name: Create list of projects that didn't pull
+  ansible.builtin.set_fact:
+    projects_needing_build: []
+
+- name: Add projects that didn't pull to build list
+  ansible.builtin.set_fact:
+    projects_needing_build: "{{ projects_needing_build + [item.item.item.name] }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item.item.name }}"
+  when:
+    - pull_results is defined
+    - not item.changed
+    - not (item.skipped | default(false))
+
+- name: Debug projects needing build
+  ansible.builtin.debug:
+    var: projects_needing_build

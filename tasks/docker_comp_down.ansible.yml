@@ -1,0 +1,12 @@
+---
+- name: Bring Down Docker Compose Projects
+  block:
+    - name: Stop Docker Compose Project Services
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_project_root }}/{{ item.item.name }}"
+        files:
+          - "{{ item.files | map(attribute='path') | map('basename') | list | first | default(omit) }}"
+        state: absent
+      loop: "{{ compose_files.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"

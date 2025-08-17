@@ -1,0 +1,39 @@
+- name: Docker Compose management
+  when: docker_maintenance | default(false) | bool
+  block:
+    - name: Find Docker Compose files
+      tags:
+        - always
+      ansible.builtin.import_tasks: find_compose_files.ansible.yml
+
+    - name: Pull docker images
+      tags:
+        - pull_images
+      ansible.builtin.import_tasks: docker_comp_pull.ansible.yml
+
+    # - name: Build Docker Compose projects
+    #   tags:
+    #     - build_images
+    #   ansible.builtin.import_tasks: docker_comp_build.ansible.yml
+
+    - name: Manually build Docker Compose projects
+      tags:
+        - manual_build
+      ansible.builtin.import_tasks: docker_comp_manual_build.ansible.yml
+
+    - name: Bring down Docker Compose projects
+      tags:
+        - never
+        - down_services
+      ansible.builtin.import_tasks: docker_comp_down.ansible.yml
+
+    - name: Start Docker Compose projects
+      tags:
+        - start_services
+      ansible.builtin.import_tasks: docker_comp_up.ansible.yml
+
+    - name: Restart Docker Compose projects
+      tags:
+        - never
+        - restart_services  # Use this tag to manually invoke the restart task
+      ansible.builtin.import_tasks: docker_comp_restart.ansible.yml

@@ -1,0 +1,28 @@
+- name: Manually Build Docker Compose Projects
+  ansible.builtin.command:
+    cmd: docker compose build --progress=plain
+    chdir: "{{ docker_project_root }}/{{ item }}"
+  register: build_result
+  changed_when: >-
+    build_result.rc == 0 and (
+      'Successfully built' in build_result.stderr or
+      'Successfully tagged' in build_result.stderr or
+      'Built' in build_result.stdout or
+      'FINISHED' in build_result.stderr
+    )
+  failed_when: false
+  loop: "{{ projects_needing_build | default([]) }}"
+  loop_control:
+    label: "Building {{ item }}"
+  when: projects_needing_build | default([]) | length > 0
+
+- name: Summarize build results
+  ansible.builtin.debug:
+    msg: |
+      Build Summary:
+      {% for result in build_result.results | default([]) %}
+      - {{ result.item }}: {% if result.rc == 0 %}✓ Success{% else %}✗ Failed ({{ result.rc }}){% endif %}
+      {% endfor %}
+  when:
+    - build_result is defined
+    - build_result.results | default([]) | length > 0

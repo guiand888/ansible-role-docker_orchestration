@@ -1,0 +1,15 @@
+---
+# vars file for guiand888.docker_orchestration
+
+# Define root directory for Docker projects, aligning with defaults
+# You can override docker_project_root in inventory if needed
+# docker_project_root: "{{ docker_project_root }}"
+
+# Example configuration for docker projects, including restart option
+# docker_projects:
+#   - name: example_project
+#     state: started  # or stopped, restarted
+#     pull: true
+#     build: false
+#     start: true
+#     restart: false

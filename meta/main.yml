@@ -1,0 +1,28 @@
+galaxy_info:
+  role_name: docker_orchestration
+  namespace: guiand888
+  author: Guillaume Andre
+  description: Ansible role for Docker Compose orchestration - build, pull, start, stop, and restart services
+  company: ""
+  license: GPL-3.0-only
+  min_ansible_version: "2.9"
+
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+    - name: Ubuntu
+      versions:
+        - "noble"
+
+  galaxy_tags:
+    - docker
+    - compose
+    - orchestration
+    - containers
+    - devops
+    - automation
+    - infrastructure
+    - maintenance
+
+dependencies: []
